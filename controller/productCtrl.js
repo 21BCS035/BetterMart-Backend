@@ -143,11 +143,15 @@ exports.deleteProduct = asyncHandler(async (req, res, next) => {
     }
   })
   
-  exports.rating = asyncHandler(async(req,res)=>{
+  exports.rating = asyncHandler(async (req, res) => {
     const { _id } = req.user;
     const { star, prodId, comment } = req.body;
     try {
       const product = await Product.findById(prodId);
+      if (!product) {
+        // Handle the case where the product is not found
+        return res.status(404).json({ message: 'Product not found' });
+    }
       let alreadyRated = product.ratings.find(
         (userId) => userId.postedby.toString() === _id.toString()
       );
@@ -197,68 +201,7 @@ exports.deleteProduct = asyncHandler(async (req, res, next) => {
     } catch (error) {
       throw new Error(error);
     }
+  });
 
-  })
-
-  // exports.uploadImages = asyncHandler(async(req,res)=>{
-    
-  //   try {
-  //     const uploader = (path) => cloudinaryUploadImg(path, "images");
-  //     const urls = [];
-  //     const files = req.files;
-  //     //for (const file of files) {
-  //       const { path } = files[0];
-  //       console.log(path)
-  //       const newpath = await uploader(path);
-  //       console.log(newpath);
-  //       urls.push(newpath);
-  //       fs.unlinkSync(path);
-  //     //}
-  //     const images = urls.map((file) => {
-  //       return file;
-  //     });
-  //     res.json(images);
-  //   } catch (error) {
-  //     throw new Error(error);
-  //   }
-  // })
-  
-  
-
-  // exports.uploadImages = asyncHandler(async (req, res) => {
-  //   const { id } = req.params;
-  //   validateMongoDbId(id);
-  
-  //   try {
-  //     const uploader = async (path) => {
-  //       const newpath = await cloudinaryUploadImg(path);
-  //       return newpath;
-  //     };
-  
-  //     const urls = [];
-  //     const files = req.files;
-  
-  //     for (const file of files) {
-  //       const { path } = file;
-  //       const newpath = await uploader(path);
-  //       console.log(newpath);
-  //       urls.push(newpath);
-  //     }
-  
-  //     const findProduct = await Product.findByIdAndUpdate(
-  //       id,
-  //       {
-  //         images: urls,
-  //       },
-  //       {
-  //         new: true,
-  //       }
-  //     );
-  
-  //     res.json(findProduct);
-  //   } catch (error) {
-  //     console.error(error); // Log the error for debugging purposes
-  //     res.status(500).json({ error: "Internal Server Error" });
-  //   }
-  // });
+ 
   
